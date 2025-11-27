@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './create-user.dto';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
+import { CreateUserDto } from '../shared/dto/create-user.dto';
+import { UserKeys } from '../types/user';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,7 @@ export class UserService {
     });
   }
 
-  async getAll(): Promise<User[]> {
-    return await this.userRepository.find();
+  async findByKey(key: UserKeys, value: string): Promise<User | null> {
+    return await this.userRepository.findByKey(key, value);
   }
 }
