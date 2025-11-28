@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../shared/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import {
@@ -8,7 +7,8 @@ import {
   JwtPayload,
   SignInResponseData,
   SignUpResponseData,
-} from '../types/auth';
+} from '../../types/auth';
+import { CreateUserDto } from '../../shared/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   async generateToken(user: AuthenticatedUser) {
-    const payload: JwtPayload = { id: user.id, email: user.email };
+    const payload: JwtPayload = { id: user.id };
 
     const token = await this.jwtService.signAsync(payload);
 
@@ -50,7 +50,7 @@ export class AuthService {
     if (existingUser) throw new ConflictException('Email already exists');
 
     const user = await this.userService.create(dto);
-    const { password, ...result } = user;
+    const { password, createdAt, ...result } = user;
     const token = await this.signIn(result);
     return { ...token, user: result };
   }

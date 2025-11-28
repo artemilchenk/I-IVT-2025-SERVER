@@ -1,8 +1,8 @@
 import { DataSource, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { CreateUserDto } from '../shared/dto/create-user.dto';
-import { UserKeys } from '../types/user';
+import { CreateUserDto } from '../../shared/dto/create-user.dto';
+import { UserKeys } from '../../types/user';
 
 //We can add one more layer <repository> to create, retrieve data or encapsulate logic dealing with db.
 @Injectable()
