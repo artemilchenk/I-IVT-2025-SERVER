@@ -16,7 +16,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateUserDto } from './shared/dto/update-user.dto';
 import { getUpdateProfileSchema } from './schema/app';
 import { unAuthorisedErrSchema } from './schema';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';

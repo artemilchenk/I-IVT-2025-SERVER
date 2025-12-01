@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
-
 import { UpdateResult } from 'typeorm';
 import { HashArgs } from '../../types';
 import { CreateUserDto } from '../../shared/dto/create-user.dto';
-import { UpdateUserDto } from '../../shared/dto/update-user.dto';
 import { UserKeys } from '../../types/user';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
@@ -31,13 +29,13 @@ export class UserService {
     });
   }
 
-  async update(user: UpdateUserDto, id: string): Promise<UpdateResult> {
+  async update(user: CreateUserDto, id: string): Promise<UpdateResult> {
     const hashedPassword = await this.hashPassword({
       password: user.password,
       salt: this.salt,
     });
 
-    return await this.userRepository.update(
+    return await this.userRepository.updateOne(
       { id: Number(id) },
       {
         ...user,
@@ -46,7 +44,7 @@ export class UserService {
     );
   }
 
-  async findByKey(key: UserKeys, value: string): Promise<User | null> {
+  async findByKey(key: UserKeys, value: string) {
     return await this.userRepository.findByKey(key, value);
   }
 }
