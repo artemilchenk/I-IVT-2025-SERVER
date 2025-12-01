@@ -5,7 +5,6 @@ import * as bcrypt from 'bcryptjs';
 import {
   AuthenticatedUser,
   JwtPayload,
-  SignInResponseData,
   SignUpResponseData,
 } from '../../types/auth';
 import { CreateUserDto } from '../../shared/dto/create-user.dto';
@@ -51,11 +50,11 @@ export class AuthService {
 
     const user = await this.userService.create(dto);
     const { password, createdAt, ...result } = user;
-    const token = await this.signIn(result);
-    return { ...token, user: result };
+    return await this.signIn(result);
   }
 
-  async signIn(user: AuthenticatedUser): Promise<SignInResponseData> {
-    return await this.generateToken(user);
+  async signIn(user: AuthenticatedUser): Promise<SignUpResponseData> {
+    const token = await this.generateToken(user);
+    return { ...token, user };
   }
 }

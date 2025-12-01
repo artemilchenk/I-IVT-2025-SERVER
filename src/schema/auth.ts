@@ -1,6 +1,5 @@
 import {
   SignInApiBodySchema,
-  SignInResponseSchema,
   SignUpApiBodySchema,
   SignUpResponseSchema,
 } from '../types/auth';
@@ -10,12 +9,6 @@ export const signUpResponseSchema: SignUpResponseSchema = {
   example: {
     access_token: 'access_token',
     user,
-  },
-};
-
-export const signInResponseSchema: SignInResponseSchema = {
-  example: {
-    access_token: 'access_token',
   },
 };
 

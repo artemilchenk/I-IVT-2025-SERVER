@@ -1,13 +1,11 @@
 import { User } from '../modules/user/user.entity';
 
 export type AuthenticatedUser = Omit<User, 'password' | 'createdAt'>;
-export interface AuthResponseData {
+
+export interface SignUpResponseData {
+  user: AuthenticatedUser;
   access_token: string;
 }
-export interface SignUpResponseData extends AuthResponseData {
-  user: AuthenticatedUser;
-}
-export interface SignInResponseData extends AuthResponseData {}
 
 export interface JwtPayload {
   id: number;
@@ -16,7 +14,6 @@ export interface JwtPayload {
 export interface JwtUser extends JwtPayload {}
 
 export type SignUpResponseSchema = { example: SignUpResponseData };
-export type SignInResponseSchema = { example: SignInResponseData };
 export type SignInApiBodySchema = {
   example: {
     email: string;

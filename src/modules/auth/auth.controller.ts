@@ -5,17 +5,12 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   signInApiBodySchema,
-  signInResponseSchema,
   signUpApiBodySchema,
   signUpResponseSchema,
 } from '../../schema/auth';
 import { badRequestErrSchema, unAuthorisedErrSchema } from '../../schema';
 import { CreateUserDto } from '../../shared/dto/create-user.dto';
-import {
-  AuthenticatedUser,
-  SignInResponseData,
-  SignUpResponseData,
-} from '../../types/auth';
+import { AuthenticatedUser, SignUpResponseData } from '../../types/auth';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -51,7 +46,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Successfully authenticated',
-    schema: signInResponseSchema,
+    schema: signUpResponseSchema,
   })
   @ApiResponse({
     status: 401,
@@ -60,7 +55,7 @@ export class AuthController {
   })
   async signIn(
     @Request() req: Request & { user: AuthenticatedUser },
-  ): Promise<SignInResponseData> {
+  ): Promise<SignUpResponseData> {
     return this.authService.signIn(req.user);
   }
 }
