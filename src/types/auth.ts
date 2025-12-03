@@ -29,12 +29,3 @@ export type SignUpApiBodySchema = {
     password: string;
   };
 };
-
-export type UpdateProfileBodySchema = {
-  example: {
-    id: string;
-    email: string;
-    firstname: string;
-    lastname: string;
-  };
-};
