@@ -8,18 +8,26 @@ import { CreateUserDto } from './shared/dto/create-user.dto';
 export class AppService {
   constructor(private readonly userService: UserService) {}
 
-  async getProfile(id: string): Promise<User> {
-    const user = await this.userService.findByKey('id', id);
+  async getProfile(
+    userId: string,
+  ): Promise<Omit<User, 'createdAt' | 'password'>> {
+    const user = await this.userService.findByKey('id', userId);
     if (!user) throw new NotFoundException('User not found');
+    const { createdAt, password, ...restKey } = user;
 
-    return user;
+    return { ...restKey };
   }
 
-  async updateProfile(user: CreateUserDto, id: string): Promise<User> {
-    const updateResult = await this.userService.update(user, id);
+  async updateProfile(
+    userDto: CreateUserDto,
+    id: string,
+  ): Promise<Omit<User, 'createdAt' | 'password'>> {
+    const updateResult = await this.userService.update(userDto, id);
 
     if (!updateResult.affected) throw new NotFoundException('User not found');
+    const user = await this.userService.findByKey('email', userDto.email);
 
-    return (await this.userService.findByKey('email', user.email)) as User;
+    const { createdAt, password, ...restKey } = user as User;
+    return { ...restKey };
   }
 }

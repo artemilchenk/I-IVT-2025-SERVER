@@ -40,7 +40,9 @@ export class AppController {
     description: 'Unauthorized',
     schema: unAuthorisedErrSchema,
   })
-  async getProfile(@Request() req: Request & { user: JwtUser }): Promise<User> {
+  async getProfile(
+    @Request() req: Request & { user: JwtUser },
+  ): Promise<Omit<User, 'createdAt' | 'password'>> {
     return await this.appService.getProfile(req.user.id + '');
   }
 
@@ -61,7 +63,7 @@ export class AppController {
   async updateProfile(
     @Request() req: Request & { user: JwtUser },
     @Body() user: CreateUserDto,
-  ): Promise<User> {
+  ): Promise<Omit<User, 'createdAt' | 'password'>> {
     return await this.appService.updateProfile(user, req.user.id + '');
   }
 }
