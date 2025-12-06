@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { JwtUser } from './types/auth';
-import { CreateUserDto } from './shared/dto/create-user.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,6 +19,7 @@ import { getUpdateProfileSchema } from './schema/app';
 import { unAuthorisedErrSchema } from './schema';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { User } from './modules/user/user.entity';
+import type { TUpdateUser } from './types/user';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -62,8 +62,9 @@ export class AppController {
   })
   async updateProfile(
     @Request() req: Request & { user: JwtUser },
-    @Body() user: CreateUserDto,
+    @Body() user: TUpdateUser,
   ): Promise<Omit<User, 'createdAt' | 'password'>> {
+    console.log({ user });
     return await this.appService.updateProfile(user, req.user.id + '');
   }
 }

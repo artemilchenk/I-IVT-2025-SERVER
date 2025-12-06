@@ -4,12 +4,12 @@ import * as bcrypt from 'bcryptjs';
 import { UpdateResult } from 'typeorm';
 import { HashArgs } from '../../types';
 import { CreateUserDto } from '../../shared/dto/create-user.dto';
-import { UserKeys } from '../../types/user';
+import { TUpdateUser, UserEntityKeys } from '../../types/user';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  private readonly salt = 10;
+  readonly salt = 10;
 
   constructor(private readonly userRepository: UserRepository) {}
 
@@ -29,22 +29,11 @@ export class UserService {
     });
   }
 
-  async update(user: CreateUserDto, id: string): Promise<UpdateResult> {
-    const hashedPassword = await this.hashPassword({
-      password: user.password,
-      salt: this.salt,
-    });
-
-    return await this.userRepository.updateOne(
-      { id: Number(id) },
-      {
-        ...user,
-        password: hashedPassword,
-      },
-    );
+  async update(user: TUpdateUser, id: string): Promise<UpdateResult> {
+    return await this.userRepository.updateOne({ id: Number(id) }, user);
   }
 
-  async findByKey(key: UserKeys, value: string) {
+  async findByKey(key: UserEntityKeys, value: string) {
     return await this.userRepository.findByKey(key, value);
   }
 }

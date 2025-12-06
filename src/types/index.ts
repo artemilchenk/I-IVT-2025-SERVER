@@ -1,4 +1,4 @@
-import { AuthenticatedUser } from './auth';
+import { User } from '../modules/user/user.entity';
 
 export interface HashArgs {
   password: string;
@@ -6,5 +6,5 @@ export interface HashArgs {
 }
 
 export interface GetUpdateProfileSchema {
-  example: AuthenticatedUser;
+  example: Pick<User, 'firstname' | 'lastname' | 'email'>;
 }
