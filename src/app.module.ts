@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GalleryModule } from './modules/gallery/gallery.module';
+import { User } from './modules/user/user.entity';
+import { Gallery } from './modules/gallery/gallery.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { GalleryModule } from './modules/gallery/gallery.module';
       database: 'iivt2025',
       autoLoadEntities: true,
       synchronize: true,
+      entities: [User, Gallery],
     }),
     AuthModule,
     GalleryModule,

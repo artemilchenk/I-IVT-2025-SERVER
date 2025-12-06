@@ -3,7 +3,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @Entity('gallery')
 export class Gallery {
@@ -15,6 +17,11 @@ export class Gallery {
 
   @Column()
   description: string;
+
+  @ManyToOne(() => User, (user) => user.galleries, {
+    onDelete: 'CASCADE', // optional: delete galleries when user is deleted
+  })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

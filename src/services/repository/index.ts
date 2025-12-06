@@ -1,6 +1,7 @@
 import {
   DataSource,
   DeepPartial,
+  DeleteResult,
   ObjectLiteral,
   Repository,
   UpdateResult,
@@ -32,5 +33,9 @@ export class RepositoryService<T extends ObjectLiteral> {
     partial: Partial<T>,
   ): Promise<UpdateResult> {
     return this.repo.update(criteria, partial);
+  }
+
+  async deleteOne(criteria: Partial<T>): Promise<DeleteResult> {
+    return this.repo.delete(criteria);
   }
 }

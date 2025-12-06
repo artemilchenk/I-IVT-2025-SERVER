@@ -33,8 +33,6 @@ export class AppService {
 
     let savedDto = { ...userDto };
 
-    console.log({ savedDto });
-
     if (isUserUpdateWiaPassword(userDto)) {
       const isPasswordEqual = await bcrypt.compare(
         userDto.oldpassword,

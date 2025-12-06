@@ -22,8 +22,8 @@ export const signInApiBodySchema: SignInApiBodySchema = {
 export const signUpApiBodySchema: SignUpApiBodySchema = {
   example: {
     email: 'user@example.com',
-    firstname: 'firstName@example.com',
-    lastname: 'lastname@example.com',
+    firstname: 'firstName.example',
+    lastname: 'lastname.example',
     password: 'StrongPassword123',
   },
 };

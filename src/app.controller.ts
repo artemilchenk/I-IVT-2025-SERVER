@@ -64,7 +64,6 @@ export class AppController {
     @Request() req: Request & { user: JwtUser },
     @Body() user: TUpdateUser,
   ): Promise<Omit<User, 'createdAt' | 'password'>> {
-    console.log({ user });
     return await this.appService.updateProfile(user, req.user.id + '');
   }
 }

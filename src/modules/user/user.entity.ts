@@ -3,7 +3,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Gallery } from '../gallery/gallery.entity';
 
 @Entity()
 export class User {
@@ -21,6 +23,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Gallery, (gallery) => gallery.user)
+  galleries?: Gallery[];
 
   @CreateDateColumn()
   createdAt: Date;

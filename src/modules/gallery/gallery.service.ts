@@ -1,24 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateGalleryDto } from './dto/create-gallery.dto';
+import { GalleryRepository } from './gallery.repository';
 
 @Injectable()
 export class GalleryService {
-  create(createGalleryDto: any) {
-    return { message: 'Gallery created', data: createGalleryDto };
+  constructor(private readonly galleryRepository: GalleryRepository) {}
+
+  async create(userId: number, createGalleryDto: CreateGalleryDto) {
+    const galleryWithUser = {
+      ...createGalleryDto,
+      user: { id: userId },
+    };
+
+    return await this.galleryRepository.createOne(galleryWithUser);
   }
 
-  findAll() {
-    return [{ id: 1, title: 'Gallery 1' }];
+  async findAllByUserId(userId: number) {
+    return await this.galleryRepository.findAllByUserId(userId);
   }
 
-  findOne(id: string) {
-    return { id, title: 'Some Gallery' };
+  async findOne(id: number) {
+    const gallery = await this.galleryRepository.findByKey('id', id);
+    if (!gallery)
+      throw new NotFoundException(`Gallery with ID ${id} not found`);
+
+    return gallery;
   }
 
-  update(id: string, updateGalleryDto: any) {
-    return { message: 'Gallery updated', id, data: updateGalleryDto };
+  async updateById(id: number, updateGalleryDto: any) {
+    return await this.galleryRepository.updateById(id, updateGalleryDto);
   }
 
-  remove(id: string) {
-    return { message: 'Gallery removed', id };
+  async deleteById(id: number) {
+    const result = await this.galleryRepository.deleteOne({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Gallery with id ${id} not found`);
+    }
+
+    return { message: 'Deleted successfully' };
   }
 }
