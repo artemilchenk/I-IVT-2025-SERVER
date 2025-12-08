@@ -22,6 +22,7 @@ import {
   galleryResponseSchema,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
+import * as stream from "node:stream";
 
 @Controller('gallery')
 export class GalleryController {
@@ -29,7 +30,6 @@ export class GalleryController {
   // CREATE
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Post('sign-up')
   @ApiOperation({
     summary: 'Create a new gallery',
   })
@@ -44,6 +44,7 @@ export class GalleryController {
     @Request() req: Request & { user: JwtUser },
     @Body() createGalleryDto: CreateGalleryDto,
   ) {
+    console.log({createGalleryDto})
     return this.galleriesService.create(req.user.id, createGalleryDto);
   }
 
@@ -99,7 +100,7 @@ export class GalleryController {
   @ApiResponse({
     status: 200,
     description: 'Returns deleted successfully message',
-    schema: { example: { message: 'Deleted successfully' } },
+    schema: { example: { id: 'stringid' } },
   })
   @ApiBadRequestAndUnauthorized()
   remove(@Param('id', ParseIntPipe) id: string) {

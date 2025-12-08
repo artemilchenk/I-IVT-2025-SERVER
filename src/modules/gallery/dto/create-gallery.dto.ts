@@ -8,6 +8,6 @@ export class CreateGalleryDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(50)
+  @MaxLength(255)
   description: string;
 }

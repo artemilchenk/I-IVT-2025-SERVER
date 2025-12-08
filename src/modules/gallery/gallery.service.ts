@@ -37,6 +37,6 @@ export class GalleryService {
       throw new NotFoundException(`Gallery with id ${id} not found`);
     }
 
-    return { message: 'Deleted successfully' };
+    return { id };
   }
 }
