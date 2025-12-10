@@ -19,7 +19,7 @@ export class Gallery {
   description: string;
 
   @ManyToOne(() => User, (user) => user.galleries, {
-    onDelete: 'CASCADE', // optional: delete galleries when user is deleted
+    onDelete: 'CASCADE',
   })
   user: User;
 

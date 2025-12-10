@@ -22,7 +22,6 @@ import {
   galleryResponseSchema,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
-import * as stream from "node:stream";
 
 @Controller('gallery')
 export class GalleryController {
@@ -44,7 +43,6 @@ export class GalleryController {
     @Request() req: Request & { user: JwtUser },
     @Body() createGalleryDto: CreateGalleryDto,
   ) {
-    console.log({createGalleryDto})
     return this.galleriesService.create(req.user.id, createGalleryDto);
   }
 
@@ -72,8 +70,11 @@ export class GalleryController {
     schema: { example: galleryResponseSchema },
   })
   @ApiBadRequestAndUnauthorized()
-  findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.galleriesService.findOne(+id);
+  findOne(
+    @Request() req: Request & { user: JwtUser },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.galleriesService.findOne(id, req.user.id);
   }
 
   // UPDATE
@@ -87,10 +88,11 @@ export class GalleryController {
   })
   @ApiBadRequestAndUnauthorized()
   update(
-    @Param('id', ParseIntPipe) id: string,
+    @Request() req: Request & { user: JwtUser },
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateGalleryDto: UpdateGalleryDto,
   ) {
-    return this.galleriesService.updateById(+id, updateGalleryDto);
+    return this.galleriesService.updateById(id, req.user.id, updateGalleryDto);
   }
 
   // DELETE
@@ -103,7 +105,10 @@ export class GalleryController {
     schema: { example: { id: 'stringid' } },
   })
   @ApiBadRequestAndUnauthorized()
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.galleriesService.deleteById(+id);
+  remove(
+    @Request() req: Request & { user: JwtUser },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.galleriesService.deleteById(id, req.user.id);
   }
 }

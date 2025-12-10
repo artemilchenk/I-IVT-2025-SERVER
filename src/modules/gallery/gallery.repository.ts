@@ -30,4 +30,11 @@ export class GalleryRepository extends RepositoryService<Gallery> {
 
     return await this.repo.save(gallery);
   }
+
+  async findOneWithoutChecks(id: number): Promise<Gallery | null> {
+    return await this.repo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+  }
 }
