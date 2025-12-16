@@ -15,10 +15,13 @@ export class GalleryRepository extends RepositoryService<Gallery> {
       where: {
         user: { id: userId },
       },
+      relations: {
+        images: true,
+      },
     });
   }
 
-  async updateById(userId: number, updateGalleryDto: UpdateGalleryDto) {
+  async updateById(userId: string, updateGalleryDto: UpdateGalleryDto) {
     const gallery = await this.repo.preload({
       id: userId,
       ...updateGalleryDto,
@@ -31,7 +34,7 @@ export class GalleryRepository extends RepositoryService<Gallery> {
     return await this.repo.save(gallery);
   }
 
-  async findOneWithoutChecks(id: number): Promise<Gallery | null> {
+  async findOneWithoutChecks(id: string): Promise<Gallery | null> {
     return await this.repo.findOne({
       where: { id },
       relations: ['user'],

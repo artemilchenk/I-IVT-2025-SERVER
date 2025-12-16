@@ -22,6 +22,7 @@ import {
   galleryResponseSchema,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
+import { UploadPhotoDto } from './dto/upload-image.dto';
 
 @Controller('gallery')
 export class GalleryController {
@@ -72,7 +73,7 @@ export class GalleryController {
   @ApiBadRequestAndUnauthorized()
   findOne(
     @Request() req: Request & { user: JwtUser },
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
   ) {
     return this.galleriesService.findOne(id, req.user.id);
   }
@@ -89,7 +90,7 @@ export class GalleryController {
   @ApiBadRequestAndUnauthorized()
   update(
     @Request() req: Request & { user: JwtUser },
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateGalleryDto: UpdateGalleryDto,
   ) {
     return this.galleriesService.updateById(id, req.user.id, updateGalleryDto);
@@ -105,10 +106,23 @@ export class GalleryController {
     schema: { example: { id: 'stringid' } },
   })
   @ApiBadRequestAndUnauthorized()
-  remove(
-    @Request() req: Request & { user: JwtUser },
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  remove(@Request() req: Request & { user: JwtUser }, @Param('id') id: string) {
     return this.galleriesService.deleteById(id, req.user.id);
+  }
+
+  // CREATE PHOTO
+  @Post('photo/:galleryId')
+  @UseGuards(JwtAuthGuard)
+  addPhoto(
+    @Param('galleryId') galleryId: string,
+    @Body() uploadImageDto: UploadPhotoDto,
+  ) {
+    return this.galleriesService.addPhoto(galleryId, uploadImageDto);
+  }
+
+  @Get(':galleryId/photos')
+  @UseGuards(JwtAuthGuard)
+  findAllPhotos(@Param('galleryId') galleryId: string) {
+    return this.galleriesService.getAllPhotos(galleryId);
   }
 }

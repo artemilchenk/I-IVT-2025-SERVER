@@ -4,13 +4,15 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Photo } from './photo.entity';
 
 @Entity('gallery')
 export class Gallery {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   title: string;
@@ -22,6 +24,9 @@ export class Gallery {
     onDelete: 'CASCADE',
   })
   user: User;
+
+  @OneToMany(() => Photo, (photo) => photo.gallery)
+  images?: Photo[];
 
   @CreateDateColumn()
   createdAt: Date;

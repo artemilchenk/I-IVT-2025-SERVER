@@ -16,7 +16,7 @@ export const updateUser: Pick<User, 'firstname' | 'lastname' | 'email'> = {
 };
 
 export const galleryResponseSchema: Omit<Gallery, 'user' | 'userId'> = {
-  id: 1,
+  id: '1',
   title: 'title@example',
   description: 'description.example',
   createdAt: new Date(),

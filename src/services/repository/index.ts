@@ -2,7 +2,9 @@ import {
   DataSource,
   DeepPartial,
   DeleteResult,
+  FindOptionsWhere,
   ObjectLiteral,
+  ObjectType,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -12,7 +14,7 @@ export class RepositoryService<T extends ObjectLiteral> {
 
   constructor(
     protected readonly dataSource: DataSource,
-    protected readonly entity: { new (): T },
+    protected readonly entity: ObjectType<T>,
   ) {
     this.repo = dataSource.getRepository(entity);
   }
@@ -24,7 +26,16 @@ export class RepositoryService<T extends ObjectLiteral> {
 
   async findByKey<K extends keyof T>(key: K, value: T[K]): Promise<T | null> {
     return await this.repo.findOne({
-      where: { [key]: value } as any,
+      where: { [key]: value } as FindOptionsWhere<T>,
+    });
+  }
+
+  async findAllByKey<K extends keyof T>(
+    key: K,
+    value: T[K],
+  ): Promise<T[] | null> {
+    return await this.repo.find({
+      where: { [key]: value } as FindOptionsWhere<T>,
     });
   }
 

@@ -7,6 +7,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { GalleryModule } from './modules/gallery/gallery.module';
 import { User } from './modules/user/user.entity';
 import { Gallery } from './modules/gallery/gallery.entity';
+import { MediaModule } from './modules/media/media.module';
+import { Photo } from './modules/gallery/photo.entity';
 
 @Module({
   imports: [
@@ -19,11 +21,13 @@ import { Gallery } from './modules/gallery/gallery.entity';
       password: 'password',
       database: 'iivt2025',
       autoLoadEntities: true,
-      synchronize: true,
-      entities: [User, Gallery],
+      synchronize: false,
+      entities: [User, Gallery, Photo],
+      migrations: ['migrations/*.ts'],
     }),
     AuthModule,
     GalleryModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
