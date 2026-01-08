@@ -4,9 +4,9 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Request,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
@@ -17,12 +17,14 @@ import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import {
-  galleryAllResponseSchema,
+  galleriesResponseSchema,
   galleryBodySchema,
   galleryResponseSchema,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
 import { UploadPhotoDto } from './dto/upload-image.dto';
+import { GalleriesPaginationDto } from './dto/get-galleries.dto';
+import { GalleriesResponse } from '../../types/gallery';
 
 @Controller('gallery')
 export class GalleryController {
@@ -47,18 +49,21 @@ export class GalleryController {
     return this.galleriesService.create(req.user.id, createGalleryDto);
   }
 
-  // READ ALL
+  // READ BY PAGE
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get galleries by user id' })
   @ApiResponse({
     status: 200,
     description: 'Returns galleries related to its creator',
-    schema: { example: galleryAllResponseSchema },
+    schema: { example: galleriesResponseSchema },
   })
   @ApiBadRequestAndUnauthorized()
-  findAll(@Request() req: Request & { user: JwtUser }) {
-    return this.galleriesService.findAllByUserId(req.user.id);
+  getItems(
+    @Request() req: Request & { user: JwtUser },
+    @Query() query: GalleriesPaginationDto,
+  ): Promise<GalleriesResponse> {
+    return this.galleriesService.getItems(req.user.id, query.page);
   }
 
   // READ ONE

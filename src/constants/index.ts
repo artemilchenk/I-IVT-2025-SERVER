@@ -1,6 +1,7 @@
 import { AuthenticatedUser } from '../types/auth';
 import { User } from '../modules/user/user.entity';
 import { Gallery } from '../modules/gallery/gallery.entity';
+import { GalleriesResponse, GalleryBodySchema } from '../types/gallery';
 
 export const user: AuthenticatedUser = {
   id: 1,
@@ -27,8 +28,10 @@ export const galleryBodySchema: Pick<Gallery, 'title' | 'description'> = {
   description: 'description.example',
 };
 
-type GalleryBodySchema = typeof galleryBodySchema;
-
-export const galleryAllResponseSchema: GalleryBodySchema[] = [
-  galleryBodySchema,
-];
+export const galleriesResponseSchema: GalleriesResponse = {
+  data: [galleryBodySchema],
+  meta: {
+    page: 1,
+    total: 57,
+  },
+};
