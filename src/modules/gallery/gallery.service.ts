@@ -12,6 +12,7 @@ import { Photo } from './photo.entity';
 import { PhotoRepository } from './photo.repository';
 import { MediaService } from '../media/media.service';
 import { GalleryOrder, PhotoDto } from '../../types/gallery';
+import { MovePhotoDto } from './dto/move-image.dto';
 
 @Injectable()
 export class GalleryService {
@@ -49,44 +50,62 @@ export class GalleryService {
       data: items,
       meta: {
         page,
+        limit: this.limit,
         total,
       },
     };
   }
 
-  async findOneWithoutChecks(id: string): Promise<Gallery | null> {
-    return await this.galleryRepository.findOneWithoutChecks(id);
+  async findGalleryWithoutChecks(id: string): Promise<Gallery | null> {
+    return await this.galleryRepository.findGalleryWithoutChecks(id);
   }
 
-  async checkActionForUser(
+  async findPhotoWithoutChecks(id: string): Promise<Photo | null> {
+    return await this.photoRepository.findPhotoWithoutChecks(id);
+  }
+
+  async checkGalleryActionForUser(
     id: string,
     userId: number,
   ): Promise<Gallery | null> {
-    const gallery = await this.findOneWithoutChecks(id);
-    if (!gallery) throw new NotFoundException('Gallery not found');
+    const gallery = await this.findGalleryWithoutChecks(id);
+    if (!gallery) throw new NotFoundException('Document not found');
 
     if (gallery.user.id + '' !== userId + '')
-      throw new ForbiddenException('You do not have access to this gallery');
+      throw new ForbiddenException('You do not have access to this document');
 
     return gallery;
   }
 
-  async findOne(id: string, userId: number): Promise<Gallery | null> {
-    return await this.checkActionForUser(id, userId);
+  async checkPhotoActionForUser(
+    id: string,
+    userId: number,
+  ): Promise<Photo | null> {
+    const photo = await this.findPhotoWithoutChecks(id);
+    if (!photo) throw new NotFoundException('Document not found');
+
+    if (photo.gallery.user.id + '' !== userId + '')
+      throw new ForbiddenException('You do not have access to this document');
+
+    return photo;
   }
 
-  async updateById(
+  async findOne(id: string, userId: number): Promise<Gallery | null> {
+    return await this.checkGalleryActionForUser(id, userId);
+  }
+
+  async updateGalleryById(
     id: string,
     userId: number,
     updateGalleryDto: UpdateGalleryDto,
   ) {
-    await this.checkActionForUser(id, userId);
+    await this.checkGalleryActionForUser(id, userId);
 
-    return await this.galleryRepository.updateById(id, updateGalleryDto);
+    return await this.galleryRepository.updateGalleryById(id, updateGalleryDto);
   }
 
   async deleteById(id: string, userId: number) {
-    await this.checkActionForUser(id, userId);
+    await this.checkGalleryActionForUser(id, userId);
 
     const result = await this.galleryRepository.deleteOne({ id });
     if (result.affected === 0) {
@@ -108,6 +127,18 @@ export class GalleryService {
     };
 
     return await this.photoRepository.createOne(photo);
+  }
+
+  async movePhoto({
+    userId,
+    id,
+    targetContainerId,
+  }: MovePhotoDto & { userId: number }): Promise<Photo> {
+    const photo = await this.checkPhotoActionForUser(id, userId);
+    console.log({ photo });
+    return {} as Photo;
+
+    return await this.photoRepository.movePhotoById(id, targetContainerId);
   }
 
   async getAllPhotos(galleryId: string): Promise<Photo[]> {

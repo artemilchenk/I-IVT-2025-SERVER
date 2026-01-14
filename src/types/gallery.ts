@@ -8,6 +8,7 @@ export interface GalleriesResponse {
   data: GalleryBodySchema[];
   meta: {
     page: number;
+    limit: number;
     total: number;
   };
 }

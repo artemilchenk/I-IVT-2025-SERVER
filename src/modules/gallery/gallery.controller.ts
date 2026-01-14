@@ -20,11 +20,13 @@ import {
   galleriesResponseSchema,
   galleryBodySchema,
   galleryResponseSchema,
+  user,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
 import { UploadPhotoDto } from './dto/upload-image.dto';
 import { GalleriesPaginationDto } from './dto/get-galleries.dto';
 import { GalleriesResponse } from '../../types/gallery';
+import { MovePhotoDto } from './dto/move-image.dto';
 
 @Controller('gallery')
 export class GalleryController {
@@ -98,7 +100,11 @@ export class GalleryController {
     @Param('id') id: string,
     @Body() updateGalleryDto: UpdateGalleryDto,
   ) {
-    return this.galleriesService.updateById(id, req.user.id, updateGalleryDto);
+    return this.galleriesService.updateGalleryById(
+      id,
+      req.user.id,
+      updateGalleryDto,
+    );
   }
 
   // DELETE
@@ -125,6 +131,21 @@ export class GalleryController {
     return this.galleriesService.addPhoto(galleryId, uploadImageDto);
   }
 
+  // MOVE PHOTO
+  @Post('photo/move')
+  @UseGuards(JwtAuthGuard)
+  movePhoto(
+    @Request() req: Request & { user: JwtUser },
+    @Body() movePhotoDto: MovePhotoDto,
+  ) {
+    return this.galleriesService.movePhoto({
+      userId: user.id,
+      id: movePhotoDto.id,
+      targetContainerId: movePhotoDto.targetContainerId,
+    });
+  }
+
+  // GET PHOTOS
   @Get(':galleryId/photos')
   @UseGuards(JwtAuthGuard)
   findAllPhotos(@Param('galleryId') galleryId: string) {

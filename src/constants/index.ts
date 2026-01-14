@@ -32,6 +32,7 @@ export const galleriesResponseSchema: GalleriesResponse = {
   data: [galleryBodySchema],
   meta: {
     page: 1,
+    limit: 4,
     total: 57,
   },
 };

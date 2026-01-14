@@ -30,20 +30,20 @@ export class GalleryRepository extends RepositoryService<Gallery> {
     });
   }
 
-  async updateById(userId: string, updateGalleryDto: UpdateGalleryDto) {
-    const gallery = await this.repo.preload({
-      id: userId,
-      ...updateGalleryDto,
+  async updateGalleryById(id: string, updateDto: UpdateGalleryDto) {
+    const document = await this.repo.preload({
+      id,
+      ...updateDto,
     });
 
-    if (!gallery) {
-      throw new NotFoundException('Gallery not found');
+    if (!document) {
+      throw new NotFoundException('Document not found');
     }
 
-    return await this.repo.save(gallery);
+    return await this.repo.save(document);
   }
 
-  async findOneWithoutChecks(id: string): Promise<Gallery | null> {
+  async findGalleryWithoutChecks(id: string): Promise<Gallery | null> {
     return await this.repo.findOne({
       where: { id },
       relations: ['user'],
