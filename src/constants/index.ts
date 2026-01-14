@@ -1,7 +1,7 @@
 import { AuthenticatedUser } from '../types/auth';
 import { User } from '../modules/user/user.entity';
 import { Gallery } from '../modules/gallery/gallery.entity';
-import { GalleriesResponse, GalleryBodySchema } from '../types/gallery';
+import { GalleriesResponse } from '../types/gallery';
 
 export const user: AuthenticatedUser = {
   id: 1,

@@ -20,7 +20,6 @@ import {
   galleriesResponseSchema,
   galleryBodySchema,
   galleryResponseSchema,
-  user,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
 import { UploadPhotoDto } from './dto/upload-image.dto';
@@ -121,16 +120,6 @@ export class GalleryController {
     return this.galleriesService.deleteById(id, req.user.id);
   }
 
-  // CREATE PHOTO
-  @Post('photo/:galleryId')
-  @UseGuards(JwtAuthGuard)
-  addPhoto(
-    @Param('galleryId') galleryId: string,
-    @Body() uploadImageDto: UploadPhotoDto,
-  ) {
-    return this.galleriesService.addPhoto(galleryId, uploadImageDto);
-  }
-
   // MOVE PHOTO
   @Post('photo/move')
   @UseGuards(JwtAuthGuard)
@@ -139,10 +128,20 @@ export class GalleryController {
     @Body() movePhotoDto: MovePhotoDto,
   ) {
     return this.galleriesService.movePhoto({
-      userId: user.id,
+      userId: req.user.id,
       id: movePhotoDto.id,
       targetContainerId: movePhotoDto.targetContainerId,
     });
+  }
+
+  // CREATE PHOTO
+  @Post('photo/:galleryId')
+  @UseGuards(JwtAuthGuard)
+  addPhoto(
+    @Param('galleryId') galleryId: string,
+    @Body() uploadImageDto: UploadPhotoDto,
+  ) {
+    return this.galleriesService.addPhoto(galleryId, uploadImageDto);
   }
 
   // GET PHOTOS

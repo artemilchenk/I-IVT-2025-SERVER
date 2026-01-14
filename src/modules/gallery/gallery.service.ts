@@ -134,9 +134,7 @@ export class GalleryService {
     id,
     targetContainerId,
   }: MovePhotoDto & { userId: number }): Promise<Photo> {
-    const photo = await this.checkPhotoActionForUser(id, userId);
-    console.log({ photo });
-    return {} as Photo;
+    await this.checkPhotoActionForUser(id, userId);
 
     return await this.photoRepository.movePhotoById(id, targetContainerId);
   }
