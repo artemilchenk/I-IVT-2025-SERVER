@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RepositoryService } from '../../services/repository';
 import { Gallery } from './gallery.entity';
 import { DataSource } from 'typeorm';
@@ -30,23 +30,27 @@ export class GalleryRepository extends RepositoryService<Gallery> {
     });
   }
 
-  async updateGalleryById(id: string, updateDto: UpdateGalleryDto) {
-    const document = await this.repo.preload({
+  async updateGallery(gallery: Gallery) {
+    return await this.repo.save(gallery);
+  }
+
+  async preloadGallery(
+    id: string,
+    updateDto: UpdateGalleryDto,
+  ): Promise<Gallery | undefined> {
+    return await this.repo.preload({
       id,
       ...updateDto,
     });
-
-    if (!document) {
-      throw new NotFoundException('Document not found');
-    }
-
-    return await this.repo.save(document);
   }
 
-  async findGalleryWithoutChecks(id: string): Promise<Gallery | null> {
+  async findGalleryWithoutChecks(
+    id: string,
+    options?: { relations?: string[] },
+  ): Promise<Gallery | null> {
     return await this.repo.findOne({
       where: { id },
-      relations: ['user'],
+      relations: options?.relations,
     });
   }
 }

@@ -20,9 +20,7 @@ export class Gallery {
   @Column()
   description: string;
 
-  @ManyToOne(() => User, (user) => user.galleries, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => User, (user) => user.galleries)
   user: User;
 
   @OneToMany(() => Photo, (photo) => photo.gallery)

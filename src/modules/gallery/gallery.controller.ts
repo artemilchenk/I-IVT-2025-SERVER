@@ -8,6 +8,10 @@ import {
   Request,
   Query,
   UseGuards,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
@@ -22,10 +26,12 @@ import {
   galleryResponseSchema,
 } from '../../constants';
 import { ApiBadRequestAndUnauthorized } from '../../decorators';
-import { UploadPhotoDto } from './dto/upload-image.dto';
 import { GalleriesPaginationDto } from './dto/get-galleries.dto';
 import { GalleriesResponse } from '../../types/gallery';
 import { MovePhotoDto } from './dto/move-image.dto';
+import { RealFileTypePipe } from '../../shared/pipes/real-file-type.pipe';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller('gallery')
 export class GalleryController {
@@ -81,7 +87,9 @@ export class GalleryController {
     @Request() req: Request & { user: JwtUser },
     @Param('id') id: string,
   ) {
-    return this.galleriesService.findOne(id, req.user.id);
+    return this.galleriesService.findGallery(id, req.user.id, {
+      relations: ['user'],
+    });
   }
 
   // UPDATE
@@ -134,14 +142,25 @@ export class GalleryController {
     });
   }
 
-  // CREATE PHOTO
+  // UPLOAD PHOTO
   @Post('photo/:galleryId')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+    }),
+  )
   addPhoto(
+    @UploadedFile(
+      new RealFileTypePipe(['image/jpeg', 'image/png']),
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 })],
+      }),
+    )
+    multerFile: Express.Multer.File,
     @Param('galleryId') galleryId: string,
-    @Body() uploadImageDto: UploadPhotoDto,
   ) {
-    return this.galleriesService.addPhoto(galleryId, uploadImageDto);
+    return this.galleriesService.addPhoto(galleryId, multerFile);
   }
 
   // GET PHOTOS

@@ -7,7 +7,6 @@ import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { GalleryRepository } from './gallery.repository';
 import { Gallery } from './gallery.entity';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { UploadPhotoDto } from './dto/upload-image.dto';
 import { Photo } from './photo.entity';
 import { PhotoRepository } from './photo.repository';
 import { MediaService } from '../media/media.service';
@@ -56,25 +55,28 @@ export class GalleryService {
     };
   }
 
-  async findGalleryWithoutChecks(id: string): Promise<Gallery | null> {
-    return await this.galleryRepository.findGalleryWithoutChecks(id);
+  async findGallery(
+    id: string,
+    userId: number,
+    options?: { relations?: string[] },
+  ): Promise<Gallery | null> {
+    const gallery = await this.galleryRepository.findGalleryWithoutChecks(
+      id,
+      options,
+    );
+
+    if (!gallery) throw new NotFoundException('Document not found');
+    this.checkGalleryActionForUser(gallery, userId);
+    return gallery;
   }
 
   async findPhotoWithoutChecks(id: string): Promise<Photo | null> {
     return await this.photoRepository.findPhotoWithoutChecks(id);
   }
 
-  async checkGalleryActionForUser(
-    id: string,
-    userId: number,
-  ): Promise<Gallery | null> {
-    const gallery = await this.findGalleryWithoutChecks(id);
-    if (!gallery) throw new NotFoundException('Document not found');
-
+  checkGalleryActionForUser(gallery: Gallery, userId: number) {
     if (gallery.user.id + '' !== userId + '')
       throw new ForbiddenException('You do not have access to this document');
-
-    return gallery;
   }
 
   async checkPhotoActionForUser(
@@ -90,40 +92,54 @@ export class GalleryService {
     return photo;
   }
 
-  async findOne(id: string, userId: number): Promise<Gallery | null> {
-    return await this.checkGalleryActionForUser(id, userId);
-  }
-
   async updateGalleryById(
     id: string,
     userId: number,
     updateGalleryDto: UpdateGalleryDto,
   ) {
-    await this.checkGalleryActionForUser(id, userId);
+    const document = await this.galleryRepository.preloadGallery(
+      id,
+      updateGalleryDto,
+    );
 
-    return await this.galleryRepository.updateGalleryById(id, updateGalleryDto);
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+    this.checkGalleryActionForUser(document, userId);
+
+    return await this.galleryRepository.updateGallery(document);
   }
 
   async deleteById(id: string, userId: number) {
-    await this.checkGalleryActionForUser(id, userId);
+    const gallery = await this.findGallery(id, userId, {
+      relations: ['user', 'images'],
+    });
+
+    if (gallery?.images?.length) {
+      for (const photo of gallery.images) {
+        await this.photoRepository.deletePhoto(photo);
+      }
+    }
 
     const result = await this.galleryRepository.deleteOne({ id });
+
     if (result.affected === 0) {
       throw new NotFoundException(`Gallery with id ${id} not found`);
     }
 
     return { id };
   }
+
   async addPhoto(
     galleryId: string,
-    uploadImageDto: UploadPhotoDto,
+    { originalname, buffer }: Express.Multer.File,
   ): Promise<Photo> {
-    const path = await this.mediaService.uploadFile(uploadImageDto.buffer);
+    const path = await this.mediaService.saveFile(originalname, buffer);
 
     const photo: PhotoDto = {
       galleryId,
       path,
-      originalFilename: path,
+      originalFilename: originalname,
     };
 
     return await this.photoRepository.createOne(photo);

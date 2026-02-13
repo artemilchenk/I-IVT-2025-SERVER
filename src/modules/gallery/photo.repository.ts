@@ -32,4 +32,8 @@ export class PhotoRepository extends MediaRepository<Photo> {
 
     return await this.repo.save(document);
   }
+
+  async deletePhoto(photo: Photo): Promise<void> {
+    await this.repo.remove(photo);
+  }
 }

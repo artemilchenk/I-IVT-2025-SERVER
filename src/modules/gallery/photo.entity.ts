@@ -22,9 +22,7 @@ export class Photo {
   @Column()
   galleryId: string;
 
-  @ManyToOne(() => Gallery, (gallery) => gallery.images, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Gallery, (gallery) => gallery.images)
   @JoinColumn({ name: 'galleryId' })
   gallery: Gallery;
 

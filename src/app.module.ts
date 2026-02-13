@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,9 +11,14 @@ import { User } from './modules/user/user.entity';
 import { Gallery } from './modules/gallery/gallery.entity';
 import { MediaModule } from './modules/media/media.module';
 import { Photo } from './modules/gallery/photo.entity';
+import { GalleryPhotoSubscriber } from './modules/gallery/photo.subscriber';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
     UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -21,6 +28,7 @@ import { Photo } from './modules/gallery/photo.entity';
       password: 'password',
       database: 'iivt2025',
       autoLoadEntities: true,
+      subscribers: [GalleryPhotoSubscriber],
       synchronize: false,
       entities: [User, Gallery, Photo],
       migrations: ['migrations/*.ts'],
